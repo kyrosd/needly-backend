@@ -1,10 +1,10 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, parser_classes
 from rest_framework.response import Response
 from rest_framework import status
 from .models import User, Inventory, Item
 from .serializer import UserSerializer, MyTokenObtainPairSerializer, ItemSerializer,InventorySerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.contrib.auth.hashers import make_password
+from rest_framework.parsers import MultiPartParser, FormParser
 
 @api_view(['GET'])
 def get_users(request):
@@ -19,15 +19,15 @@ def get_user_inventories(request, user_id):
     return Response(serializer.data)
 
 
+
 @api_view(['POST'])
 def create_user(request):
-    data = request.data.copy()
-    data['password'] = make_password(data['password'])  
-    serializer = UserSerializer(data=data)
+    serializer = UserSerializer(data=request.data)  # no make_password here
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
@@ -48,6 +48,7 @@ def get_items(request, inventory_id):
     return Response(serializer.data)
 
 @api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
 def create_inventory(request):
     serializer = InventorySerializer(data=request.data)
 
@@ -58,13 +59,15 @@ def create_inventory(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
+@parser_classes([MultiPartParser, FormParser])
 def create_item(request):
     serializer = ItemSerializer(data=request.data)
 
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
+
+    print(serializer.errors)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

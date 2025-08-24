@@ -2,11 +2,18 @@ from rest_framework import serializers
 from .models import User, Inventory, Item
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email']
+        fields = ['id', 'username', 'email', 'password']
+
+    def create(self, validated_data):
+        validated_data['password'] = make_password(validated_data['password'])
+        return super().create(validated_data)
 
 class InventorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,6 +21,8 @@ class InventorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ItemSerializer(serializers.ModelSerializer):
+    item_image = serializers.ImageField(use_url=True)
+
     class Meta:
         model = Item
         fields = '__all__'

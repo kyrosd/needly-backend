@@ -8,6 +8,8 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('users/', get_users, name='get_users'),
@@ -26,3 +28,6 @@ urlpatterns = [
     path('inventories/<uuid:inventory_id>/update/', update_inventory, name='update_inventory'),
     path('inventory/<uuid:inventory_id>/', get_inventory, name='get_inventory')
 ]
+
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
