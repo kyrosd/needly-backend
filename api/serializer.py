@@ -16,6 +16,8 @@ class UserSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 class InventorySerializer(serializers.ModelSerializer):
+    inventory_image = serializers.ImageField(use_url=True)
+
     class Meta:
         model = Inventory
         fields = '__all__'

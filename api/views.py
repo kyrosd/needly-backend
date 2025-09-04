@@ -82,6 +82,7 @@ def delete_item(request, item_id):
 
 
 @api_view(['PATCH'])
+@parser_classes([MultiPartParser, FormParser])
 def update_item(request, item_id):
     try:
         item = Item.objects.get(id=item_id)
@@ -115,6 +116,7 @@ def delete_inventory(request, inventory_id):
 
 
 @api_view(['PATCH'])
+@parser_classes([MultiPartParser, FormParser])
 def update_inventory(request, inventory_id):
     try:
         inventory = Inventory.objects.get(id=inventory_id)
